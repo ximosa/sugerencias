@@ -6,15 +6,18 @@ import { resolve } from 'path'
 export default defineConfig({
   plugins: [react()],
   build: {
-    lib: {
-      entry: resolve(__dirname, 'index.tsx'),
-      name: 'GeminiSuggestionsWidget',
-      fileName: (format) => `widget.js`,
-      formats: ['iife']
-    },
+    // Ya no usamos el modo 'lib', hacemos un build de aplicación normal.
+    // Vite usará `index.html` como punto de entrada por defecto.
     rollupOptions: {
-      // No externalizamos React/ReactDOM, los incluimos en el bundle
-      // para que el widget sea autocontenido.
+      output: {
+        // Forzamos el nombre del archivo de entrada a 'widget.js'
+        // para que la URL del script de instalación sea estable.
+        entryFileNames: `widget.js`,
+        // También podemos controlar los nombres de otros archivos si es necesario,
+        // pero para este caso, lo principal es el entryFileNames.
+        chunkFileNames: `[name].js`,
+        assetFileNames: `[name].[ext]`,
+      }
     }
   }
 })
