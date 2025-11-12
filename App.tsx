@@ -199,6 +199,11 @@ function App() {
                      onClick={() => {
                        setAnswer(null);
                        setSelectedSuggestion(null);
+                       // Scroll to suggestions section
+                       const suggestionsSection = document.querySelector('.suggestions-section');
+                       if (suggestionsSection) {
+                         suggestionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                       }
                      }}
                      className="back-to-suggestions-button"
                    >
