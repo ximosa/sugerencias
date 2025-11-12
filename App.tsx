@@ -46,7 +46,9 @@ const App: React.FC = () => {
       }
     };
 
-    fetchSuggestions();
+    if(articleText) {
+      fetchSuggestions();
+    }
   }, [articleText]);
 
   useEffect(() => {
@@ -87,28 +89,37 @@ const App: React.FC = () => {
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">Explora Más Sobre Este Artículo</h1>
       </div>
       
-      <p className="text-gray-600 dark:text-gray-300 mb-6">
-        He analizado este artículo y he preparado algunos temas que podrían interesarte. Haz clic en cualquiera de ellos para obtener una respuesta al instante.
-      </p>
-
-      {error && <p className="mt-4 text-center text-red-500 bg-red-100 dark:bg-red-900/50 p-3 rounded-lg">{error}</p>}
-      
-      {isLoadingSuggestions && (
-         <div className="mt-8 pt-6 flex flex-col items-center justify-center">
-            <LoadingSpinner />
-            <p className="mt-4 text-gray-600 dark:text-gray-300">Generando ideas...</p>
-         </div>
-      )}
-
-      {!isLoadingSuggestions && suggestions.length > 0 && (
-        <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
-          <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Haz clic en un tema para explorar:</h2>
-          <div className="space-y-3">
-            {suggestions.map((suggestion, index) => (
-              <SuggestionCard key={index} suggestion={suggestion} onClick={handleSuggestionClick} />
-            ))}
-          </div>
+      {error && (
+        <div className="mt-4 text-center text-red-700 dark:text-red-300 bg-red-100 dark:bg-red-900/50 p-4 rounded-lg">
+            <h3 className="font-bold text-lg mb-2">Error de Configuración</h3>
+            <p>{error}</p>
         </div>
+      )}
+      
+      {!error && (
+        <>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
+            He analizado este artículo y he preparado algunos temas que podrían interesarte. Haz clic en cualquiera de ellos para obtener una respuesta al instante.
+          </p>
+          
+          {isLoadingSuggestions && (
+             <div className="mt-8 pt-6 flex flex-col items-center justify-center">
+                <LoadingSpinner />
+                <p className="mt-4 text-gray-600 dark:text-gray-300">Generando ideas...</p>
+             </div>
+          )}
+
+          {!isLoadingSuggestions && suggestions.length > 0 && (
+            <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Haz clic en un tema para explorar:</h2>
+              <div className="space-y-3">
+                {suggestions.map((suggestion, index) => (
+                  <SuggestionCard key={index} suggestion={suggestion} onClick={handleSuggestionClick} />
+                ))}
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       <div ref={answerRef} className="mt-6 pt-2">
