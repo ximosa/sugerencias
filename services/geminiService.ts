@@ -1,13 +1,9 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
-// FIX: Switched from `import.meta.env.VITE_API_KEY` to `process.env.API_KEY` to resolve the TypeScript error and adhere to the coding guidelines for API key retrieval.
-const apiKey = process.env.API_KEY;
-
-if (!apiKey) {
-  throw new Error("La clave de API de Gemini (API_KEY) no está configurada.");
-}
-
-const ai = new GoogleGenAI({ apiKey });
+// Fix: Per Gemini API guidelines, initialize the SDK with process.env.API_KEY.
+// This resolves the TypeScript error for `import.meta.env` and aligns with the requirement
+// to exclusively use `process.env.API_KEY`.
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 const generateSuggestions = async (articleText: string): Promise<string[]> => {
   const prompt = `
