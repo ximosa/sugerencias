@@ -36,7 +36,7 @@
             <div>
                 <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-2">Paso 1: Sube los Archivos de la Aplicación</h2>
                 <p class="text-gray-600 dark:text-gray-400">
-                    Primero, asegúrate de haber subido todos los archivos de esta aplicación (<code>index.tsx</code>, <code>App.tsx</code>, las carpetas <code>components</code> y <code>services</code>, etc.) a un directorio público en tu servidor o hosting.
+                    Primero, asegúrate de haber subido todos los archivos de esta aplicación (<code>index.tsx</code>, <code>App.tsx</code>, las carpetas <code>components</code> y <code>services</code>, etc.) a un directorio público en tu servidor o hosting. Si usas la URL de abajo, este paso ya está cubierto.
                 </p>
             </div>
 
@@ -51,9 +51,11 @@
                     <pre class="p-4 overflow-x-auto"><code id="code-block" class="text-sm text-gray-300">&lt;!-- Punto de montaje para la App de Sugerencias Gemini --&gt;
 &lt;div id="root"&gt;&lt;/div&gt;
 
-&lt;!-- Script para cargar la aplicación desde tu servidor --&gt;
-&lt;!-- ¡IMPORTANTE! Reemplaza la URL con la ruta real donde alojaste el script --&gt;
-&lt;script type="module" src="https://URL-DE-TU-SERVIDOR/index.tsx"&gt;&lt;/script&gt;
+&lt;!-- Carga Babel para transpilar TSX en el navegador --&gt;
+&lt;script src="https://unpkg.com/@babel/standalone/babel.min.js"&gt;&lt;/script&gt;
+
+&lt;!-- Script para cargar la aplicación de sugerencias --&gt;
+&lt;script type="text/babel" data-type="module" src="https://sugerencias-iota.vercel.app/index.tsx"&gt;&lt;/script&gt;
 </code></pre>
                 </div>
                  <p id="copy-feedback" class="text-green-500 text-sm mt-2 h-4"></p>

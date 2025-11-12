@@ -37,37 +37,34 @@ Para que la aplicación funcione en tu propio sitio, necesitas desplegarla en un
         *   **Value:** Pega aquí la clave de API de Gemini que copiaste en el Paso 1.
     *   Esta es la forma segura de usar tu clave sin exponerla en el código.
 4.  **Despliega:**
+    *   **Importante:** En la sección "Build and Output Settings", asegúrate de que el "Framework Preset" esté configurado como **"Other"**. Esto garantizará que Vercel publique todos tus archivos estáticamente y evitará errores 404.
     *   Haz clic en el botón "**Deploy**".
-    *   Vercel construirá y desplegará automáticamente tu aplicación. Una vez completado, te proporcionará una URL pública (por ejemplo: `https://tu-proyecto.vercel.app`).
+    *   Vercel construirá y desplegará automáticamente tu aplicación. Una vez completado, te proporcionará una URL pública (por ejemplo: `https://sugerencias-iota.vercel.app`).
 
 ---
 
 ## Integración en tu Blog
 
-Ahora que tu aplicación está desplegada y funcionando en Vercel, puedes integrarla en tu blog.
+Ahora que tu aplicación está desplegada y funcionando, puedes integrarla en tu blog.
 
-### Paso 1: Obtén la URL de tu Script
+### Paso 1: Prepara el Código de Inserción
 
-La URL que necesitas es la de tu despliegue en Vercel, apuntando al archivo `index.tsx`. Por ejemplo:
-
-`https://tu-proyecto.vercel.app/index.tsx`
-
-### Paso 2: Prepara el Código de Inserción
-
-Copia el siguiente bloque de código y **reemplaza la URL de ejemplo** con la URL que obtuviste en el paso anterior.
+Copia el siguiente bloque de código. La URL del script ya está configurada para apuntar a la versión desplegada.
 
 ```html
 <!-- Punto de montaje para la App de Sugerencias Gemini -->
 <div id="root"></div>
 
-<!-- Script para cargar la aplicación desde tu servidor de Vercel -->
-<!-- ¡IMPORTANTE! Reemplaza la URL con la ruta real de tu despliegue -->
-<script type="module" src="https://tu-proyecto.vercel.app/index.tsx"></script>
+<!-- Carga Babel para transpilar TSX en el navegador. Es necesario para que el código de React funcione sin un paso de compilación previo. -->
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<!-- Script para cargar la aplicación desde el servidor de Vercel -->
+<script type="text/babel" data-type="module" src="https://sugerencias-iota.vercel.app/index.tsx"></script>
 ```
 
-### Paso 3: Pega el Script en tu Blog
+### Paso 2: Pega el Script en tu Blog
 
-1.  Pega el bloque de código que acabas de preparar al final de la plantilla de tus artículos, justo antes de la etiqueta de cierre `</body>`.
+1.  Pega el bloque de código que acabas de copiar al final de la plantilla de tus artículos, justo antes de la etiqueta de cierre `</body>`.
 2.  **Asegúrate** de que el contenido principal de tus artículos esté envuelto en un `div` con el id `page-wrapper`, ya que la aplicación buscará este elemento para leer el texto.
 
 ```html
@@ -82,7 +79,8 @@ Copia el siguiente bloque de código y **reemplaza la URL de ejemplo** con la UR
 
 <!-- Pega el script aquí al final -->
 <div id="root"></div>
-<script type="module" src="https://tu-proyecto.vercel.app/index.tsx"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel" data-type="module" src="https://sugerencias-iota.vercel.app/index.tsx"></script>
 
 </body>
 </html>
