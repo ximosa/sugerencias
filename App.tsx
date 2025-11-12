@@ -143,7 +143,15 @@ function App() {
             {isLoadingSuggestions && (
               <div className="widget-loading-suggestions">
                 <LoadingSpinner />
-                <p>Generando ideas...</p>
+                <div className="loading-content">
+                  <p className="loading-main-text">Analizando tu artículo...</p>
+                  <p className="loading-sub-text">Descubriendo temas fascinantes que te harán profundizar más</p>
+                  <div className="loading-dots">
+                    <span className="dot"></span>
+                    <span className="dot"></span>
+                    <span className="dot"></span>
+                  </div>
+                </div>
               </div>
             )}
 
