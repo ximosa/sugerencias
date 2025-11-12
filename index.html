@@ -57,6 +57,24 @@
                     <pre class="p-4 overflow-x-auto"><code id="code-block" class="text-sm text-gray-300">&lt;!-- Punto de montaje para la App de Sugerencias Gemini --&gt;
 &lt;div id="root"&gt;&lt;/div&gt;
 
+&lt;!-- Script de carga diferida para el widget --&gt;
+&lt;script&gt;
+document.addEventListener('DOMContentLoaded', function() {
+  const observer = new IntersectionObserver((entries) =&gt; {
+    if (entries[0].isIntersecting) {
+      const script = document.createElement('script');
+      script.src = 'https://sugerencias-iota.vercel.app/widget.js';
+      script.defer = true;
+      document.head.appendChild(script);
+      observer.disconnect();
+    }
+  });
+  const rootElement = document.getElementById('root');
+  if (rootElement) {
+    observer.observe(rootElement);
+  }
+});
+&lt;/script&gt;
 &lt;!-- Script de la aplicación de sugerencias --&gt;
 &lt;script src="https://sugerencias-iota.vercel.app/widget.js" defer&gt;&lt;/script&gt;
 </code></pre>

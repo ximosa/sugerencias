@@ -12,15 +12,39 @@ function App() {
   const [answer, setAnswer] = useState<string | null>(null);
   const [selectedSuggestion, setSelectedSuggestion] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
   const answerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const articleElement = document.getElementById('page-wrapper');
-    if (articleElement && articleElement.innerText.trim()) {
-      setArticleText(articleElement.innerText);
+    const loadWidget = () => {
+      const articleElement = document.getElementById('page-wrapper');
+      if (articleElement && articleElement.innerText.trim()) {
+        setArticleText(articleElement.innerText);
+      } else {
+        setError('No se pudo encontrar el contenido del artículo (id="page-wrapper").');
+        setIsLoadingSuggestions(false);
+      }
+    };
+
+    // Progressive enhancement: check if Intersection Observer is available
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          loadWidget();
+          observer.disconnect();
+        }
+      }, { threshold: 0.1 });
+
+      const widgetElement = document.getElementById('root');
+      if (widgetElement) {
+        observer.observe(widgetElement);
+      } else {
+        // Fallback if root element not found
+        loadWidget();
+      }
     } else {
-      setError('No se pudo encontrar el contenido del artículo (id="page-wrapper").');
-      setIsLoadingSuggestions(false);
+      // Fallback for browsers without Intersection Observer
+      loadWidget();
     }
   }, []);
 
@@ -39,7 +63,11 @@ function App() {
         setIsLoadingSuggestions(false);
       }
     };
-    fetchSuggestions();
+
+    // Add a small delay to show loading state for better UX
+    const timeoutId = setTimeout(fetchSuggestions, 300);
+
+    return () => clearTimeout(timeoutId);
   }, [articleText]);
 
   useEffect(() => {
@@ -57,13 +85,21 @@ function App() {
     try {
       const result = await geminiService.getAnswerForSuggestion(suggestion, articleText);
       setAnswer(result);
+      setRetryCount(0); // Reset retry count on success
     } catch (err: any) {
-      setError(err.message || 'No se pudo obtener la respuesta.');
       console.error(err);
+      setError(err.message || 'No se pudo obtener la respuesta.');
+      setRetryCount(prev => prev + 1);
     } finally {
       setIsLoadingAnswer(false);
     }
   }, [articleText, answer, selectedSuggestion]);
+
+  const handleRetry = useCallback(() => {
+    if (selectedSuggestion && retryCount < 3) {
+      handleSuggestionClick(selectedSuggestion);
+    }
+  }, [selectedSuggestion, retryCount, handleSuggestionClick]);
 
   return (
     <div className="gemini-suggestions-widget">
@@ -98,24 +134,31 @@ function App() {
         )}
 
         <div ref={answerRef} className="answer-area">
-          {isLoadingAnswer && (
-            <div className="widget-loading-answer">
-              <LoadingSpinner />
-              <span>Buscando la respuesta...</span>
-            </div>
-          )}
-          {answer && (
-            <div className="answer-content">
-              <h3 className="answer-title">
-                Respuesta a: <span className="answer-title-highlight">{selectedSuggestion}</span>
-              </h3>
-              <div
-                className="answer-text"
-                dangerouslySetInnerHTML={{ __html: answer }}
-              />
-            </div>
-          )}
-        </div>
+           {isLoadingAnswer && (
+             <div className="widget-loading-answer">
+               <LoadingSpinner />
+               <span>Buscando la respuesta...</span>
+             </div>
+           )}
+           {error && selectedSuggestion && retryCount < 3 && (
+             <div className="widget-retry">
+               <button onClick={handleRetry} className="retry-button">
+                 Reintentar ({retryCount}/3)
+               </button>
+             </div>
+           )}
+           {answer && (
+             <div className="answer-content">
+               <h3 className="answer-title">
+                 Respuesta a: <span className="answer-title-highlight">{selectedSuggestion}</span>
+               </h3>
+               <div
+                 className="answer-text"
+                 dangerouslySetInnerHTML={{ __html: answer }}
+               />
+             </div>
+           )}
+         </div>
       </div>
     </div>
   );
