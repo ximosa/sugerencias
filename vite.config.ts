@@ -19,6 +19,6 @@ export default defineConfig({
   },
   define: {
     // Pasa la variable de entorno de Vercel (VITE_API_KEY) al código del cliente
-    'process.env.API_KEY': JSON.stringify(process.env.VITE_API_KEY),
+    'process.env.API_KEY': JSON.stringify(process.env.VITE_API_KEY || process.env.API_KEY),
   },
 });
