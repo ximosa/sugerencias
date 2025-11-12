@@ -7,8 +7,8 @@ Este proyecto es un script inteligente diseñado para integrarse en cualquier ar
 - **Análisis Automático:** Lee el contenido del artículo directamente desde el DOM.
 - **Sugerencias Inteligentes:** Utiliza la API de Gemini para generar 4 preguntas o temas de exploración relevantes.
 - **Respuestas Instantáneas:** Proporciona respuestas dentro del mismo widget, creando una experiencia de usuario fluida.
-- **Fácil de Integrar:** Se puede añadir a cualquier sitio web con un simple fragmento de código HTML.
-- **Despliegue Sencillo:** Optimizado para un despliegue rápido en plataformas como Vercel.
+- **Integración Súper Fácil:** Se añade a cualquier web con un simple fragmento de código HTML.
+- **Rendimiento Optimizado:** Carga un único archivo JavaScript pre-compilado para máxima velocidad.
 
 ---
 
@@ -37,53 +37,38 @@ Para que la aplicación funcione en tu propio sitio, necesitas desplegarla en un
         *   **Value:** Pega aquí la clave de API de Gemini que copiaste en el Paso 1.
     *   Esta es la forma segura de usar tu clave sin exponerla en el código.
 4.  **Despliega:**
-    *   **Importante:** En la sección "Build and Output Settings", asegúrate de que el "Framework Preset" esté configurado como **"Other"**. Esto garantizará que Vercel publique todos tus archivos estáticamente y evitará errores 404.
+    *   **Importante:** En la sección "Build and Output Settings", asegúrate de que el "Framework Preset" esté configurado como **"Other"**. Esto garantizará que Vercel publique todos tus archivos estáticamente.
     *   Haz clic en el botón "**Deploy**".
-    *   Vercel construirá y desplegará automáticamente tu aplicación. Una vez completado, te proporcionará una URL pública (por ejemplo: `https://sugerencias-iota.vercel.app`).
+    *   Vercel desplegará tu aplicación y te proporcionará una URL pública (ej: `https://tu-proyecto.vercel.app`).
 
 ---
 
 ## Integración en tu Blog
 
-Ahora que tu aplicación está desplegada y funcionando, puedes integrarla en tu blog.
+Integrar el widget es ahora más fácil que nunca.
 
-### Paso 1: Prepara el Código de Inserción
+### Paso 1: Prepara el Contenido de tu Artículo
 
-Copia el siguiente bloque de código. La URL del script ya está configurada para apuntar a la versión desplegada.
+Asegúrate de que el texto principal de tu artículo esté dentro de un elemento con `id="page-wrapper"`. Así es como el widget sabe qué texto leer.
+
+```html
+<div id="page-wrapper">
+    <h1>El Título de Mi Artículo</h1>
+    <p>Este es el primer párrafo de mi increíble contenido...</p>
+    <!-- ... resto del artículo ... -->
+</div>
+```
+
+### Paso 2: Pega el Script en tu Web
+
+Copia el siguiente bloque de código y pégalo justo antes de la etiqueta de cierre `</body>` en la plantilla de tu blog.
 
 ```html
 <!-- Punto de montaje para la App de Sugerencias Gemini -->
 <div id="root"></div>
 
-<!-- Carga Babel para transpilar TSX en el navegador. Es necesario para que el código de React funcione sin un paso de compilación previo. -->
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-<!-- Script para cargar la aplicación desde el servidor de Vercel -->
-<script type="text/babel" data-type="module" src="https://sugerencias-iota.vercel.app/index.tsx"></script>
+<!-- Script de la aplicación de sugerencias -->
+<script src="https://sugerencias-iota.vercel.app/widget.js" defer></script>
 ```
 
-### Paso 2: Pega el Script en tu Blog
-
-1.  Pega el bloque de código que acabas de copiar al final de la plantilla de tus artículos, justo antes de la etiqueta de cierre `</body>`.
-2.  **Asegúrate** de que el contenido principal de tus artículos esté envuelto en un `div` con el id `page-wrapper`, ya que la aplicación buscará este elemento para leer el texto.
-
-```html
-<!-- ... El contenido de tu artículo está aquí dentro ... -->
-<div id="page-wrapper">
-    <h1>Mi increíble artículo</h1>
-    <p>Este es el primer párrafo...</p>
-    <p>Y este es el segundo...</p>
-</div>
-
-<!-- ... otros elementos de tu página ... -->
-
-<!-- Pega el script aquí al final -->
-<div id="root"></div>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<script type="text/babel" data-type="module" src="https://sugerencias-iota.vercel.app/index.tsx"></script>
-
-</body>
-</html>
-```
-
-¡Y listo! El asistente de artículos debería aparecer ahora en las páginas de tu blog.
+**¡Eso es todo!** El asistente de artículos aparecerá automáticamente en las páginas de tu blog, listo para ayudar a tus lectores a explorar más a fondo tu contenido.
