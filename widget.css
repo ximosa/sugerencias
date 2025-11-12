@@ -1,20 +1,3 @@
-/* Base container to isolate styles */
-.gemini-suggestions-widget {
-  all: initial; /* Reset all inherited styles */
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-  font-size: 16px;
-  line-height: 1.5;
-  color: #374151;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-.gemini-suggestions-widget *,
-.gemini-suggestions-widget *::before,
-.gemini-suggestions-widget *::after {
-  box-sizing: border-box;
-}
-
 .widget-container {
   width: 100%;
   max-width: 42rem; /* 672px */
