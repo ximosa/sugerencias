@@ -128,7 +128,7 @@ Copia el siguiente bloque de código y pégalo justo antes de la etiqueta de cie
 <div id="root"></div>
 
 <!-- Script de la aplicación de sugerencias -->
-<script src="https://sugerencias-iota.vercel.app/widget.js" defer></script>
+<script src="https://tu-dominio.com/widget.js" defer></script>
 ```
 
-**¡Eso es todo!** El asistente aparecerá automáticamente, ya que el archivo `widget.js` ahora existe y es servido correctamente por Vercel.
+**¡Eso es todo!** El asistente aparecerá automáticamente, ya que el archivo `widget.js` ahora existe y es servido correctamente por tu hosting.

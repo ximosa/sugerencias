@@ -43,6 +43,18 @@
                     <pre class="p-4 overflow-x-auto"><code id="code-block" class="text-sm text-gray-300">&lt;!-- Punto de montaje para la App de Sugerencias Gemini --&gt;
 &lt;div id="root"&gt;&lt;/div&gt;
 
+&lt;!-- Script de carga del widget después de que la página esté lista --&gt;
+&lt;script&gt;
+window.addEventListener('load', function() {
+  // Delay adicional para asegurar que todo esté renderizado
+  setTimeout(function() {
+    const script = document.createElement('script');
+    script.src = 'https://sugerencias-iota.vercel.app/widget.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  }, 500);
+});
+&lt;/script&gt;
 &lt;!-- Script de carga diferida para el widget --&gt;
 &lt;script&gt;
 document.addEventListener('DOMContentLoaded', function() {

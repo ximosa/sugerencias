@@ -40,25 +40,19 @@ function App() {
       }
     };
 
-    // Progressive enhancement: check if Intersection Observer is available
-    if ('IntersectionObserver' in window) {
-      const observer = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-          loadWidget();
-          observer.disconnect();
-        }
-      }, { threshold: 0.1 });
+    // Esperar a que la página esté completamente cargada antes de cargar las sugerencias
+    const handlePageLoad = () => {
+      // Pequeño delay para asegurar que todo esté renderizado
+      setTimeout(loadWidget, 500);
+    };
 
-      const widgetElement = document.getElementById('root');
-      if (widgetElement) {
-        observer.observe(widgetElement);
-      } else {
-        // Fallback if root element not found
-        loadWidget();
-      }
+    if (document.readyState === 'complete') {
+      // Si la página ya está cargada, ejecutar inmediatamente
+      handlePageLoad();
     } else {
-      // Fallback for browsers without Intersection Observer
-      loadWidget();
+      // Esperar al evento load
+      window.addEventListener('load', handlePageLoad);
+      return () => window.removeEventListener('load', handlePageLoad);
     }
   }, []);
 

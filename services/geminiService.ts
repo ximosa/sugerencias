@@ -10,8 +10,8 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 // Model fallback system for handling overloaded models
 const MODELS = {
-  primary: 'models/gemini-2.5-pro',
-  fallback: 'models/gemini-flash-latest'
+  primary: 'models/gemini-flash-latest',
+  fallback: 'models/gemini-pro'
 } as const;
 
 type ModelType = typeof MODELS.primary | typeof MODELS.fallback;
@@ -73,11 +73,9 @@ async function generateSuggestions(articleText: string): Promise<string[]> {
   // Try with current model, fallback to alternative if overloaded
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const prompt = `Analiza el siguiente artículo y genera 3 o 4 preguntas o temas de seguimiento interesantes que un lector podría tener. Tu respuesta DEBE ser únicamente un array JSON de strings válido. No agregues ninguna explicación ni texto introductorio.
+      const prompt = `Genera 3 preguntas relacionadas con: ${articleText.substring(0, 500)}
 
-      Artículo:
-      ${articleText.substring(0, 30000)}
-      `;
+Responde solo con un array JSON de strings.`;
 
       const response = await ai.models.generateContent({
         model: currentModel,
@@ -168,15 +166,11 @@ async function getAnswerForSuggestion(
   // Try with current model, fallback to alternative if overloaded
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const prompt = `Basado en el siguiente artículo, proporciona una respuesta detallada a la pregunta del usuario. Formatea tu respuesta usando HTML simple (puedes usar etiquetas como <p>, <ul>, <ol>, <li>, <strong>, y <em>). No incluyas \`<html>\`, \`<body>\` o bloques \`\`\`html.
+      const prompt = `Responde a: "${suggestion}"
 
-      Artículo de contexto:
-      """
-      ${articleText.substring(0, 30000)}
-      """
+Contexto: ${articleText.substring(0, 2000)}
 
-      Pregunta del usuario: "${suggestion}"
-      `;
+Usa HTML simple: <p>, <strong>, <em>, <ul>, <li>.`;
 
       const response = await ai.models.generateContent({
         model: currentModel,
@@ -202,7 +196,7 @@ async function getAnswerForSuggestion(
           currentText += chunk;
           onChunk(currentText);
           // Add delay to simulate typing effect
-          await new Promise(resolve => setTimeout(resolve, 50 + Math.random() * 100));
+          await new Promise(resolve => setTimeout(resolve, 20 + Math.random() * 30));
         }
       }
 
