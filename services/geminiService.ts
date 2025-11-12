@@ -30,7 +30,13 @@ const generateSuggestions = async (articleText: string): Promise<string[]> => {
         responseSchema: { type: Type.ARRAY, items: { type: Type.STRING } },
       },
     });
-    const jsonText = response.text.trim();
+
+    const text = response.text;
+    if (!text) {
+      throw new Error("La respuesta de la API para las sugerencias no contenía texto.");
+    }
+    
+    const jsonText = text.trim();
     const suggestions = JSON.parse(jsonText);
     if (Array.isArray(suggestions) && suggestions.every(item => typeof item === 'string')) {
       return suggestions.slice(0, 4); // Asegurarse de que solo haya 4
@@ -56,8 +62,14 @@ const getAnswerForSuggestion = async (suggestion: string, articleContext: string
   `;
   try {
     const response = await ai.models.generateContent({ model: "gemini-2.5-flash", contents: prompt });
+    
+    const text = response.text;
+    if (!text) {
+      throw new Error("La respuesta de la API para la respuesta no contenía texto.");
+    }
+
     // Limpiamos la respuesta para evitar markdown
-    return response.text.replace(/`/g, "").replace(/\*/g, "").replace(/#/g, "");
+    return text.replace(/`/g, "").replace(/\*/g, "").replace(/#/g, "");
   } catch (error) {
     console.error("Error en getAnswerForSuggestion:", error);
     throw new Error("No se pudo obtener la respuesta desde la API.");
