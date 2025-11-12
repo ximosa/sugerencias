@@ -33,14 +33,13 @@ async function generateSuggestions(articleText: string): Promise<string[]> {
       },
     });
 
-    // FIX: Trim whitespace from the response to prevent potential JSON parsing issues.
-    const textResponse = response.text.trim();
+    const textResponse = response.text;
     if (!textResponse) {
       throw new Error("La API de Gemini no devolvió contenido de texto para las sugerencias.");
     }
     
     // The response.text will be a JSON string due to the configuration.
-    const suggestions = JSON.parse(textResponse);
+    const suggestions = JSON.parse(textResponse.trim());
     return suggestions;
 
   } catch (error) {
@@ -74,14 +73,13 @@ async function getAnswerForSuggestion(suggestion: string, articleText: string): 
       contents: prompt,
     });
     
-    // FIX: Trim whitespace from the response to ensure clean HTML output.
-    const textResponse = response.text.trim();
+    const textResponse = response.text;
     if (!textResponse) {
         throw new Error("La API de Gemini no devolvió contenido de texto para la respuesta.");
     }
     
     // The model is prompted to return HTML, which can be used with dangerouslySetInnerHTML
-    return textResponse;
+    return textResponse.trim();
 
   } catch (error) {
     console.error("Error al obtener respuesta de Gemini:", error);
