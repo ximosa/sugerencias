@@ -33,7 +33,8 @@ async function generateSuggestions(articleText: string): Promise<string[]> {
       },
     });
 
-    const textResponse = response.text;
+    // FIX: Trim whitespace from the response to prevent potential JSON parsing issues.
+    const textResponse = response.text.trim();
     if (!textResponse) {
       throw new Error("La API de Gemini no devolvió contenido de texto para las sugerencias.");
     }
@@ -73,7 +74,8 @@ async function getAnswerForSuggestion(suggestion: string, articleText: string): 
       contents: prompt,
     });
     
-    const textResponse = response.text;
+    // FIX: Trim whitespace from the response to ensure clean HTML output.
+    const textResponse = response.text.trim();
     if (!textResponse) {
         throw new Error("La API de Gemini no devolvió contenido de texto para la respuesta.");
     }
