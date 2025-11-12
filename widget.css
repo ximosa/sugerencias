@@ -182,7 +182,6 @@
 /* Styles for the HTML answer content */
 .answer-text {
   color: #374151;
-  white-space: pre-wrap;
   word-wrap: break-word;
 }
 .answer-text p { margin-bottom: 0.75em; }
