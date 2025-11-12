@@ -115,6 +115,19 @@ function App() {
     }
   }, [selectedSuggestion, retryCount, handleSuggestionClick]);
 
+  // Auto-retry logic for overloaded service
+  useEffect(() => {
+    if (error && error.includes('sobrecargado') && retryCount < 3) {
+      const autoRetryTimeout = setTimeout(() => {
+        if (selectedSuggestion) {
+          handleSuggestionClick(selectedSuggestion);
+        }
+      }, Math.pow(2, retryCount) * 2000); // Exponential backoff: 2s, 4s, 8s
+
+      return () => clearTimeout(autoRetryTimeout);
+    }
+  }, [error, retryCount, selectedSuggestion, handleSuggestionClick]);
+
   return (
     <div className="gemini-suggestions-widget">
       <div className="widget-container">
@@ -156,8 +169,13 @@ function App() {
            )}
            {error && selectedSuggestion && retryCount < 3 && (
              <div className="widget-retry">
+               <p className="retry-message">
+                 {error.includes('sobrecargado')
+                   ? `Reintentando automáticamente en ${Math.pow(2, retryCount)} segundos...`
+                   : 'Error al cargar la respuesta.'}
+               </p>
                <button onClick={handleRetry} className="retry-button">
-                 Reintentar ({retryCount}/3)
+                 Reintentar ahora ({retryCount}/3)
                </button>
              </div>
            )}

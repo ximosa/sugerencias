@@ -85,6 +85,8 @@ async function generateSuggestions(articleText: string): Promise<string[]> {
         throw new Error("Error de configuración: La clave de API de Gemini no está configurada correctamente.");
       } else if (error.message.includes('quota') || error.message.includes('limit')) {
         throw new Error("Se ha alcanzado el límite de uso de la API. Por favor, inténtalo más tarde.");
+      } else if (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('UNAVAILABLE')) {
+        throw new Error("El servicio de Gemini está temporalmente sobrecargado. Por favor, inténtalo en unos momentos.");
       } else if (error.message.includes('network') || error.message.includes('fetch')) {
         throw new Error("Error de conexión. Verifica tu conexión a internet e inténtalo de nuevo.");
       }
@@ -167,6 +169,8 @@ async function getAnswerForSuggestion(
         throw new Error("Error de configuración: La clave de API de Gemini no está configurada correctamente.");
       } else if (error.message.includes('quota') || error.message.includes('limit')) {
         throw new Error("Se ha alcanzado el límite de uso de la API. Por favor, inténtalo más tarde.");
+      } else if (error.message.includes('503') || error.message.includes('overloaded') || error.message.includes('UNAVAILABLE')) {
+        throw new Error("El servicio de Gemini está temporalmente sobrecargado. Por favor, inténtalo en unos momentos.");
       } else if (error.message.includes('network') || error.message.includes('fetch')) {
         throw new Error("Error de conexión. Verifica tu conexión a internet e inténtalo de nuevo.");
       }
