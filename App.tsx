@@ -6,6 +6,7 @@ import './widget.css';
 
 function App() {
   const [articleText, setArticleText] = useState('');
+  const [fullArticleText, setFullArticleText] = useState(''); // Para respuestas detalladas
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(true);
   const [isLoadingAnswer, setIsLoadingAnswer] = useState(false);
@@ -21,7 +22,18 @@ function App() {
     const loadWidget = () => {
       const articleElement = document.getElementById('page-wrapper');
       if (articleElement && articleElement.innerText.trim()) {
-        setArticleText(articleElement.innerText);
+        // Extraer título de la página o primer h1
+        const titleElement = document.querySelector('title') || document.querySelector('h1');
+        const title = titleElement ? titleElement.textContent?.trim() : '';
+
+        // Extraer meta description
+        const metaDescription = document.querySelector('meta[name="description"]');
+        const description = metaDescription ? metaDescription.getAttribute('content')?.trim() : '';
+
+        // Combinar título y descripción para sugerencias rápidas
+        const summaryText = `${title} ${description}`.trim();
+        setArticleText(summaryText || articleElement.innerText); // Fallback a full text si no hay título/desc
+        setFullArticleText(articleElement.innerText); // Guardar full text para respuestas
       } else {
         setError('No se pudo encontrar el contenido del artículo (id="page-wrapper").');
         setIsLoadingSuggestions(false);
@@ -90,7 +102,7 @@ function App() {
     try {
       const result = await geminiService.getAnswerForSuggestion(
         suggestion,
-        articleText,
+        fullArticleText || articleText, // Usar full text para respuestas detalladas
         (chunk: string) => {
           setStreamingAnswer(chunk);
         }
