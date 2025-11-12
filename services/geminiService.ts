@@ -33,8 +33,13 @@ async function generateSuggestions(articleText: string): Promise<string[]> {
       },
     });
 
+    const textResponse = response.text;
+    if (!textResponse) {
+      throw new Error("La API de Gemini no devolvió contenido de texto para las sugerencias.");
+    }
+    
     // The response.text will be a JSON string due to the configuration.
-    const suggestions = JSON.parse(response.text);
+    const suggestions = JSON.parse(textResponse);
     return suggestions;
 
   } catch (error) {
@@ -68,8 +73,13 @@ async function getAnswerForSuggestion(suggestion: string, articleText: string): 
       contents: prompt,
     });
     
+    const textResponse = response.text;
+    if (!textResponse) {
+        throw new Error("La API de Gemini no devolvió contenido de texto para la respuesta.");
+    }
+    
     // The model is prompted to return HTML, which can be used with dangerouslySetInnerHTML
-    return response.text;
+    return textResponse;
 
   } catch (error) {
     console.error("Error al obtener respuesta de Gemini:", error);
