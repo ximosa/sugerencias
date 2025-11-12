@@ -13,6 +13,8 @@ function App() {
   const [selectedSuggestion, setSelectedSuggestion] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [streamingAnswer, setStreamingAnswer] = useState<string>('');
+  const [isStreaming, setIsStreaming] = useState(false);
   const answerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -81,17 +83,29 @@ function App() {
     setSelectedSuggestion(suggestion);
     setIsLoadingAnswer(true);
     setAnswer(null);
+    setStreamingAnswer('');
     setError(null);
+    setIsStreaming(true);
+
     try {
-      const result = await geminiService.getAnswerForSuggestion(suggestion, articleText);
+      const result = await geminiService.getAnswerForSuggestion(
+        suggestion,
+        articleText,
+        (chunk: string) => {
+          setStreamingAnswer(chunk);
+        }
+      );
       setAnswer(result);
+      setStreamingAnswer(result); // Ensure final answer is set
       setRetryCount(0); // Reset retry count on success
     } catch (err: any) {
       console.error(err);
       setError(err.message || 'No se pudo obtener la respuesta.');
       setRetryCount(prev => prev + 1);
+      setIsStreaming(false);
     } finally {
       setIsLoadingAnswer(false);
+      setIsStreaming(false);
     }
   }, [articleText, answer, selectedSuggestion]);
 
@@ -147,15 +161,33 @@ function App() {
                </button>
              </div>
            )}
-           {answer && (
+           {(isStreaming || answer) && (
              <div className="answer-content">
                <h3 className="answer-title">
                  Respuesta a: <span className="answer-title-highlight">{selectedSuggestion}</span>
                </h3>
                <div
                  className="answer-text"
-                 dangerouslySetInnerHTML={{ __html: answer }}
+                 dangerouslySetInnerHTML={{
+                   __html: isStreaming ? streamingAnswer : (answer || '')
+                 }}
                />
+               {isStreaming && (
+                 <div className="streaming-cursor">|</div>
+               )}
+               {!isStreaming && answer && (
+                 <div className="answer-actions">
+                   <button
+                     onClick={() => {
+                       setAnswer(null);
+                       setSelectedSuggestion(null);
+                     }}
+                     className="back-to-suggestions-button"
+                   >
+                     ← Volver a las sugerencias
+                   </button>
+                 </div>
+               )}
              </div>
            )}
          </div>

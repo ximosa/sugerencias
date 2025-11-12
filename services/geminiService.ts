@@ -98,9 +98,14 @@ async function generateSuggestions(articleText: string): Promise<string[]> {
  * Gets a detailed answer for a specific suggestion, using the article as context.
  * @param suggestion The question or topic to get an answer for.
  * @param articleText The context article.
+ * @param onChunk Callback function to handle streaming chunks
  * @returns A promise that resolves to the answer string, formatted as simple HTML.
  */
-async function getAnswerForSuggestion(suggestion: string, articleText: string): Promise<string> {
+async function getAnswerForSuggestion(
+  suggestion: string,
+  articleText: string,
+  onChunk?: (chunk: string) => void
+): Promise<string> {
   const cacheKey = getCacheKey('answer', `${suggestion}:${articleText.substring(0, 100)}`);
 
   // Check cache first
@@ -133,6 +138,21 @@ async function getAnswerForSuggestion(suggestion: string, articleText: string): 
 
     // The model is prompted to return HTML, which can be used with dangerouslySetInnerHTML
     const answer = textResponse.trim();
+
+    // Simulate streaming effect by splitting the response into chunks
+    if (onChunk) {
+      const words = answer.split(' ');
+      let currentText = '';
+      const chunkSize = 3; // Words per chunk
+
+      for (let i = 0; i < words.length; i += chunkSize) {
+        const chunk = words.slice(i, i + chunkSize).join(' ') + ' ';
+        currentText += chunk;
+        onChunk(currentText);
+        // Add delay to simulate typing effect
+        await new Promise(resolve => setTimeout(resolve, 50 + Math.random() * 100));
+      }
+    }
 
     // Cache the result
     setCachedResponse(cacheKey, answer);
