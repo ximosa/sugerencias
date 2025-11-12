@@ -1,0 +1,5 @@
+{
+  "name": "Sugerencias de Artículo con Gemini",
+  "description": "Una aplicación que se inserta en un artículo, lo lee y propone 4 sugerencias para explorar más a fondo con Gemini.",
+  "requestFramePermissions": []
+}
