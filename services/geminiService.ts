@@ -1,75 +1,84 @@
+// FIX: Implemented the geminiService to fetch suggestions and answers from the Gemini API.
 import { GoogleGenAI, Type } from "@google/genai";
 
-// Fix: Per Gemini API guidelines, initialize the SDK with process.env.API_KEY.
-// This resolves the TypeScript error for `import.meta.env` and aligns with the requirement
-// to exclusively use `process.env.API_KEY`.
+// Initialize the Google Gemini AI client using the API key from environment variables.
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-const generateSuggestions = async (articleText: string): Promise<string[]> => {
-  const prompt = `
-    Eres un asistente experto en análisis de contenido. Tu tarea es leer un artículo y generar exactamente 4 preguntas o sugerencias de continuación que despierten la curiosidad del lector.
-    Estas sugerencias deben ser concisas y formuladas de manera que puedan ser usadas directamente como un prompt en un chat de IA.
-    Debes devolver tu respuesta únicamente como un array JSON de strings, sin ningún texto adicional, formato markdown o explicación.
-    Ejemplo de salida: ["¿Cuál es el impacto económico de la polinización?", "Explica la estructura social de una colmena.", "¿Qué amenazas enfrentan las abejas hoy en día?", "Crea una lista de plantas para atraer abejas a mi jardín."]
+/**
+ * Generates a list of suggested topics based on the provided article text.
+ * @param articleText The full text of the article to analyze.
+ * @returns A promise that resolves to an array of suggestion strings.
+ */
+async function generateSuggestions(articleText: string): Promise<string[]> {
+  try {
+    const model = 'gemini-2.5-flash'; // For basic text tasks.
+    const prompt = `Analiza el siguiente artículo y genera 3 o 4 preguntas o temas de seguimiento interesantes que un lector podría tener. Tu respuesta DEBE ser únicamente un array JSON de strings válido. No agregues ninguna explicación ni texto introductorio.
 
     Artículo:
-    ---
-    ${articleText.substring(0, 15000)}
-    ---
-  `;
-  try {
+    ${articleText.substring(0, 30000)}
+    `;
+
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: model,
       contents: prompt,
       config: {
         responseMimeType: "application/json",
-        responseSchema: { type: Type.ARRAY, items: { type: Type.STRING } },
+        responseSchema: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.STRING,
+            description: "Una pregunta o tema sugerido basado en el artículo."
+          }
+        },
       },
     });
 
-    const text = response.text;
-    if (!text) {
-      throw new Error("La respuesta de la API para las sugerencias no contenía texto.");
-    }
-    
-    const jsonText = text.trim();
-    const suggestions = JSON.parse(jsonText);
-    if (Array.isArray(suggestions) && suggestions.every(item => typeof item === 'string')) {
-      return suggestions.slice(0, 4); // Asegurarse de que solo haya 4
-    }
-    throw new Error("La respuesta de la API no tiene el formato de array de strings esperado.");
+    // The response.text will be a JSON string due to the configuration.
+    const suggestions = JSON.parse(response.text);
+    return suggestions;
+
   } catch (error) {
-    console.error("Error en generateSuggestions:", error);
-    throw new Error("No se pudieron generar las sugerencias desde la API.");
+    console.error("Error al generar sugerencias con Gemini:", error);
+    // Propagate a user-friendly error message.
+    throw new Error("No se pudieron generar las sugerencias. Por favor, verifica tu conexión o la configuración de la API.");
   }
-};
+}
 
-const getAnswerForSuggestion = async (suggestion: string, articleContext: string): Promise<string> => {
-  const prompt = `
-    Actúa como un asistente experto. Basándote en el siguiente artículo, proporciona una respuesta clara, bien estructurada y útil a la pregunta del usuario.
-    Tu respuesta debe ser directa y concisa. No uses Markdown, pero sí saltos de línea para la legibilidad.
-    
-    Artículo de Contexto:
-    ---
-    ${articleContext.substring(0, 15000)}
-    ---
-
-    Pregunta del Usuario: "${suggestion}"
-  `;
+/**
+ * Gets a detailed answer for a specific suggestion, using the article as context.
+ * @param suggestion The question or topic to get an answer for.
+ * @param articleText The context article.
+ * @returns A promise that resolves to the answer string, formatted as simple HTML.
+ */
+async function getAnswerForSuggestion(suggestion: string, articleText: string): Promise<string> {
   try {
-    const response = await ai.models.generateContent({ model: "gemini-2.5-flash", contents: prompt });
-    
-    const text = response.text;
-    if (!text) {
-      throw new Error("La respuesta de la API para la respuesta no contenía texto.");
-    }
+    const model = 'gemini-2.5-flash'; // For basic text tasks.
+    const prompt = `Basado en el siguiente artículo, proporciona una respuesta detallada a la pregunta del usuario. Formatea tu respuesta usando HTML simple (puedes usar etiquetas como <p>, <ul>, <ol>, <li>, <strong>, y <em>). No incluyas \`<html>\`, \`<body>\` o bloques \`\`\`html.
 
-    // Limpiamos la respuesta para evitar markdown
-    return text.replace(/`/g, "").replace(/\*/g, "").replace(/#/g, "");
-  } catch (error) {
-    console.error("Error en getAnswerForSuggestion:", error);
-    throw new Error("No se pudo obtener la respuesta desde la API.");
-  }
-};
+    Artículo de contexto:
+    """
+    ${articleText.substring(0, 30000)}
+    """
+
+    Pregunta del usuario: "${suggestion}"
+    `;
+
+    const response = await ai.models.generateContent({
+      model: model,
+      contents: prompt,
+    });
     
-export const geminiService = { generateSuggestions, getAnswerForSuggestion };
+    // The model is prompted to return HTML, which can be used with dangerouslySetInnerHTML
+    return response.text;
+
+  } catch (error) {
+    console.error("Error al obtener respuesta de Gemini:", error);
+    // Propagate a user-friendly error message.
+    throw new Error("No se pudo obtener la respuesta. Por favor, inténtalo de nuevo.");
+  }
+}
+
+export const geminiService = {
+  generateSuggestions,
+  getAnswerForSuggestion,
+};
