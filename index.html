@@ -5,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Instalación del Asistente de Artículos Gemini</title>
     <script src="https://cdn.tailwindcss.com"></script>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.29.0",
+    "vite": "https://aistudiocdn.com/vite@^7.2.2",
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.1",
+    "path": "https://aistudiocdn.com/path@^0.12.7"
+  }
+}
+</script>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 font-sans p-4 sm:p-8 flex items-center justify-center min-h-screen">
 
@@ -53,7 +66,7 @@
         <div class="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
             <h3 class="text-lg font-semibold text-gray-800 dark:text-white">¿Cómo funciona?</h3>
             <p class="text-gray-600 dark:text-gray-400 mt-2">
-                El script <code>widget.js</code> contiene toda la lógica de la aplicación ya compilada. Simplemente buscará el <code>div#root</code> en tu página y se renderizará allí. ¡Así de simple!
+                El script <code>widget.js</code> es un archivo autocontenido que se genera automáticamente en cada despliegue. Simplemente buscará el <code>div#root</code> en tu página y renderizará la aplicación de React allí.
             </p>
         </div>
     </div>
