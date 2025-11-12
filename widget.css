@@ -185,8 +185,8 @@
   white-space: pre-wrap;
   word-wrap: break-word;
 }
-.answer-text p { margin-bottom: 1em; }
-.answer-text ul, .answer-text ol { margin-left: 1.5em; margin-bottom: 1em; }
+.answer-text p { margin-bottom: 0.75em; }
+.answer-text ul, .answer-text ol { margin-left: 1.5em; margin-bottom: 0.75em; }
 .answer-text li { margin-bottom: 0.5em; }
 .answer-text strong { font-weight: 600; }
 .answer-text em { font-style: italic; }
